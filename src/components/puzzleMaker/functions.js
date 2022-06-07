@@ -8,7 +8,9 @@ export const createCorners = (x, y) => {
     let mesh_calc_corners = {
 
     }
+
     let first_render_calc_corners = [first_corner, second_corner, third_corner, fourth_corner]
+    
     return {
         mesh_calc_corners, first_render_calc_corners
     }
@@ -22,7 +24,10 @@ export const createEdges = (c_1, c_2, c_3, c_4, yInteger) => {
 
     // calc first edges
     for (let index = c_1; index < c_2; index++) {
-        first_edges.push(index);
+        // skipping first index cause it's a corner
+        if (index != 1) {
+            first_edges.push(index);
+        }
     }
 
     // calc second edges
@@ -88,11 +93,14 @@ export const SecondRenderBuildPuzzle = (x, y, positions) => {
 // third pass ( adding a mesh to the array)
 export const ThirdRenderBuildPuzzle = (positions) => {
     let mesh = null;
+    
     const { mesh_calc_corners, first_render_calc_corners
     } = createCorners(x, y);
+
     let corners = first_render_calc_corners;
     const { mesh_calc_edges
     } = createEdges(...corners, y)
+
     for (let index = 0; index < positions.length; index++) {
 
     }
