@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { FirstRenderBuildPuzzle, SecondRenderBuildPuzzle } from "../../puzzleMaker/functions";
+import { FirstRenderBuildPuzzle, SecondRenderBuildPuzzle, ThirdRenderBuildPuzzle } from "../../puzzleMaker/functions";
+import { useFBX } from '@react-three/drei'
 
 const Shader = (props) => {
   const [positions, setPositions] = useState([]);
@@ -21,14 +22,27 @@ const Shader = (props) => {
       setStage(2);
     } else if (stage === 2) {
       console.log('stage 3, I am calculating the meshes, I am not built yet')
+      let copied_positions = positions;
+      let new_positions = ThirdRenderBuildPuzzle(xInteger, yInteger, copied_positions);
+      setPositions([...new_positions])
+      setStage(3);
     }
   }, [stage]);
 
   return (
-    positions.map(({ x, y, material, first_render, index }) => (
-      <>
+    positions.map(({ x, y, material, mesh, first_render }, index) => {
+
+      if (mesh && mesh != null ) {
+        const fbx = useFBX(mesh.mesh_url)
+        // cloning the fbx cause three js uses a reference on useFBX
+        let fbxClone = fbx.clone();
+
+        return <primitive object={fbxClone} key={index} position={[x, 1, y]} />
+      }
+
+      return (
         <mesh
-          position={[x, y, 0]}
+          position={[x, 1, y]}
           key={index}
         >
           <boxBufferGeometry args={[1, 1, 1]} />
@@ -53,10 +67,10 @@ const Shader = (props) => {
               transparent
             />
           }
+          <instancedMesh />
         </mesh>
-
-      </>
-    ))
+      )
+    })
 
   )
 }
